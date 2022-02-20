@@ -24,10 +24,10 @@ class CONFIG:
         ripples = [1e-9, 1e-6, 1e-3, 1, 5]  # the Chebyshev Type-I ripples
 
     class TRAIN:
-        batch_size = 80  # number of audio files per batch
+        batch_size = 20  # number of audio files per batch
         lr = 3e-4  # learning rate
         epochs = 150  # max training epochs
-        workers = 16  # number of dataloader workers
+        workers = 8  # number of dataloader workers
         val_split = 0.1  # validation set proportion
         loss_type = 2  # training loss types. 1: MSE loss, 2: MSE and multi-resolution STFT loss
         assert loss_type in [1, 2], 'Invalid loss_type'

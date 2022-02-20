@@ -7,6 +7,8 @@ import numpy as np
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.utilities import rank_zero_only
 
+from config import CONFIG
+
 from utils.stft import STFTMag
 
 matplotlib.use('Agg')
@@ -56,5 +58,13 @@ class TensorBoardLoggerExpanded(TensorBoardLogger):
                                   spec_img,
                                   epoch,
                                   dataformats='HWC')
+        names = ['high_res', 'low_res', 'reconstructed']
+        for i, audio in enumerate([y, y_low, y_recon]):
+            print("Logging audio", names[i])
+            self.experiment.add_audio(path.join(self.save_dir, 'audio_result', names[i]),
+                                  audio,
+                                  epoch,
+                                  sample_rate=CONFIG.DATA.sr
+                                  )
         self.experiment.flush()
         return
