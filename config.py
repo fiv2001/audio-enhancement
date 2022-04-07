@@ -19,14 +19,14 @@ class CONFIG:
         # resampy supported methods
         resampy = ['kaiser_best', 'kaiser_fast', 'fft', 'polyphase', 'linear', 'zero_order_hold', 'sinc_best',
                    'sinc_medium', 'sinc_fastest', 'soxr_vhq', 'soxr_hq', 'soxr_mq', 'soxr_lq', 'soxr_qq']
-        assert downsampling in ['augment', 'cheby'] + resampy, 'Invalid downsampling method'
+        assert downsampling in ['augment', 'cheby', 'real'] + resampy, 'Invalid downsampling method'
         orders = range(1, 11)  # the Chebyshev Type-I orders
         ripples = [1e-9, 1e-6, 1e-3, 1, 5]  # the Chebyshev Type-I ripples
 
     class TRAIN:
         batch_size = 20  # number of audio files per batch
         lr = 3e-4  # learning rate
-        epochs = 150  # max training epochs
+        epochs = 20  # max training epochs
         workers = 8  # number of dataloader workers
         val_split = 0.1  # validation set proportion
         loss_type = 2  # training loss types. 1: MSE loss, 2: MSE and multi-resolution STFT loss
@@ -54,18 +54,21 @@ class CONFIG:
 
     # Dataset config
     class DATA:
-        dataset = 'vivos'  # dataset to use. Should either be 'vctk' or 'vivos'
+        dataset = 'vctk'  # dataset to use. Should either be 'vctk' or 'vivos' or 'real'
         '''
         Dictionary that specifies paths to root directories and train/test text files of each datasets.
         'root' is the path to the dataset and each line of the train.txt/test.txt files should contains the path to an
-        audio file from 'root'. 
+        audio file from 'root'.
         '''
         data_dir = {'vctk': {'root': 'data/vctk/wav48',
                              'train': "data/vctk/train.txt",
                              'test': "data/vctk/test.txt"},
                     'vivos': {'root': 'data/vivos',
                               'train': 'data/vivos/train.txt',
-                              'test': 'data/vivos/test.txt'}}
+                              'test': 'data/vivos/test.txt'},
+                    'real': {'root': 'data/real',
+                             'train': 'data/real/train.txt',
+                             'test': 'data/real/test.txt'}}
         assert dataset in data_dir.keys(), 'Unknown dataset.'
         sr = 16000  # target audio sampling rate
         ratio = 2  # downsampling ratio
@@ -77,5 +80,5 @@ class CONFIG:
         sample_path = 'audio_samples'  # path to save generated audio samples in evaluation.
 
     class TEST:
-        in_dir = 'test_samples'  # path to test audio inputs
-        out_dir = 'test_samples'  # path to generated outputs
+        in_dir = 'test_inputs'  # path to test audio inputs
+        out_dir = 'test_outputs'  # path to generated outputs

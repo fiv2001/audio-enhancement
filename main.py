@@ -80,7 +80,9 @@ def test(model):
     window_size = CONFIG.DATA.window_size
     stride = CONFIG.DATA.stride
 
-    for file in files:
+    logger = TensorBoardLoggerExpanded(CONFIG.DATA.sr)
+
+    for index, file in enumerate(files):
         sig, sr = librosa.load(os.path.join(in_dir, file), sr=CONFIG.DATA.sr)
         d = max(len(sig) // stride + 1, 2) * stride
         sig = np.hstack((sig, np.zeros(d - len(sig))))
@@ -90,7 +92,9 @@ def test(model):
         pred = overlap_add(pred, window_size, stride, (1, 1, len(sig)))
         audio = np.squeeze(pred.detach().cpu().numpy())
         sf.write(os.path.join(out_dir, 'recon_' + file), audio, samplerate=sr, subtype='PCM_16')
-
+        if index == 0:
+            logger.log_inference_audio(audio, 'y_recon')
+            logger.log_inference_audio(sig, 'y_low')
 
 def to_onnx(model, onnx_path):
     model.eval()

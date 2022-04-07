@@ -168,6 +168,7 @@ class BaseModel(pl.LightningModule):
         loss = self.forward_loss(x, y)
         self.train_sisdr(x, y)
         self.log('train_loss', loss, logger=True)
+        self.log('learning rate', self.learning_rate, logger=True)
         return loss
 
     def validation_step(self, val_batch, batch_idx):
@@ -183,6 +184,7 @@ class BaseModel(pl.LightningModule):
             i = torch.randint(0, x_in.shape[0], (1,)).item()
             lr, hr, recon = torch.squeeze(x_in[i]), torch.squeeze(y[i]), torch.squeeze(x[i])
             self.trainer.logger.log_spectrogram(hr, lr, recon, self.current_epoch)
+            self.trainer.logger.log_validation_audio(hr, lr, recon, self.current_epoch)
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)

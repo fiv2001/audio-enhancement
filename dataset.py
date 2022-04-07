@@ -102,7 +102,11 @@ class CustomDataset(Dataset):
         sig = sig[0: int(batches * self.stride + self.stride)]
         target = sig.copy()
 
-        low_sig = self.lowpass(sig)
+        low_sig = sig
+        if self.downsampling == 'real':
+            low_sig, _ = librosa.load(self.data_list[index].replace('hr', 'lr'), sr=self.sr)
+        else:
+            low_sig = self.lowpass(sig)
         if len(target) != len(low_sig):
             low_sig = pad(low_sig, len(target))
 
@@ -115,4 +119,5 @@ class CustomDataset(Dataset):
             return X, target, low_sig
 
         y = frame(target, self.window, self.stride)[:, np.newaxis, :]
+        print("Getting item, shape:", sig.shape)
         return torch.tensor(X), torch.tensor(y)
